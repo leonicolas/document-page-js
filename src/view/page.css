@@ -1,0 +1,50 @@
+:root {
+    --docp_a4-height: 297mm;
+    --docp_a4-width: 210mm;
+    --docp_letter-height: 279mm;
+    --docp_letter-width: 216mm;
+
+    --docp_pager-height: var(--docp_letter-height);
+    --docp_paper-width: var(--docp_letter-width);
+
+    --docp_margin-top: 1in;
+    --docp_margin-bottom: 1in;
+    --docp_margin-left: 1in;
+    --docp_margin-right: 1in;
+    --docp_header-height: 0.5in;
+    --docp_footer-height: 0.5in;
+}
+
+.docp_page {
+    height: var(--docp_pager-height);
+    width: var(--docp_paper-width);
+    display: grid;
+    grid-template-columns: var(--docp_margin-left) auto var(--docp_margin-right);
+    grid-template-rows: var(--docp_margin-top) var(--docp_header-height) auto var(--docp_footer-height) var(--docp_margin-bottom);
+}
+
+.docp_page > div {
+    border: solid 1px #ccc;
+}
+
+.docp_left {
+    grid-row: 2 / span 3;
+}
+
+.docp_right {
+    grid-column: 3;
+    grid-row: 2 / span 3;
+}
+
+@media print {
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+
+@page
+{
+    size: auto;
+    margin: 0;
+}

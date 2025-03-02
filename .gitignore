@@ -1,0 +1,9 @@
+# IDEs
+.idea/
+.vscode/
+
+# Dist dir
+dist/
+
+# Node
+node_modules/
