@@ -52,7 +52,8 @@
                 layoutPages(content, pageTemplate, doc);
             }
 
-            function layoutPages(content, pageTemplate, doc, page, innerNode) {
+            function layoutPages(content, pageTemplate, doc, page, depth) {
+                depth = depth ?? 0;
                 if(!page) {
                     page = pageTemplate.cloneNode(true);
                     doc.appendChild(page);
@@ -63,7 +64,7 @@
                     let container = pageContent;
                     const pageContentHeight = pageContent.getBoundingClientRect().height;
 
-                    if (innerNode) {
+                    if (depth > 0) {
                         container = content.cloneNode();
                         pageContent.appendChild(container);
                     }
@@ -78,11 +79,14 @@
                             continue;
                         }
 
+                        clonedNode.remove();
+
                         // It overflowed
                         if (clonedNode.nodeName === "#text") {
                             // Split text
-                            const splitText = splitTextToFit(pageContent, clonedNode.textContent);
+                            const splitText = splitTextToFit(pageContent, node.textContent);
                             clonedNode.textContent = splitText[0];
+                            container.appendChild(clonedNode);
 
                             // New page
                             page = pageTemplate.cloneNode(true);
@@ -91,11 +95,11 @@
                             container.appendChild(document.createTextNode(splitText[1]));
 
                         } else if (node.childNodes.length) {
-                            clonedNode.remove();
-                            layoutPages(node, pageTemplate, doc, page, renderTo, true);
+                            page = layoutPages(node, pageTemplate, doc, page, renderTo, depth + 1);
                         }
                     }
                 }
+                return page;
             }
 
             function splitTextToFit(pageContent, text) {
@@ -131,7 +135,7 @@
 
     <template id="content">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br>Proin cursus, elit et congue convallis, turpis orci molestie dolor, vitae dignissim ipsum libero id augue. Vivamus quis efficitur magna. Nullam consectetur diam mi. Sed condimentum, lorem quis faucibus dignissim, urna justo euismod dui, at egestas tellus arcu a mauris. Sed consectetur sit amet libero ac venenatis. Mauris tincidunt libero eu faucibus imperdiet. Curabitur semper ipsum et finibus bibendum. Nulla pharetra, turpis dictum volutpat ultrices, sapien orci dignissim turpis, in volutpat ex eros ullamcorper neque. Suspendisse mattis ornare dolor et ornare.</p>
-        <p>Aenean magna nisi, elementum sit amet sapien in, pellentesque interdum est. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse potenti. Pellentesque magna quam, fermentum et varius non, auctor eget mauris. Vestibulum posuere ligula eget egestas fringilla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nullam ullamcorper porttitor ullamcorper. Duis at nibh imperdiet, malesuada erat eu, rutrum neque. Mauris elementum efficitur tortor sit amet pretium. <br>Phasellus purus nibh, blandit id aliquet id, congue vitae erat. Curabitur non libero egestas, scelerisque urna vitae, luctus leo. Morbi suscipit sed nisl eu dignissim. Duis pretium tempus neque, a laoreet arcu tincidunt quis.</p>
+        <p>Aenean magna nisi, elementum sit amet sapien in, pellentesque interdum est. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse potenti. Pellentesque magna quam, fermentum et varius non, auctor eget mauris. Vestibulum posuere ligula eget egestas fringilla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nullam ullamcorper porttitor ullamcorper. Duis at nibh imperdiet, malesuada erat eu, rutrum neque.<br>Mauris elementum efficitur tortor sit amet pretium. Phasellus purus nibh, blandit id aliquet id, congue vitae erat.<br><span style="color: blue;">Curabitur non libero egestas, scelerisque urna vitae, luctus leo.</span><br>Morbi suscipit sed nisl eu dignissim. Duis pretium tempus neque, a laoreet arcu tincidunt quis.</p>
         <p>Suspendisse elementum dolor vel facilisis mattis. Nam tortor risus, eleifend in ligula quis, aliquam cursus enim. Nam arcu tortor, sagittis in aliquet sit amet, ornare et erat. Sed suscipit odio in tortor vestibulum consectetur. Integer finibus metus vel sapien porttitor commodo. Sed euismod nisl sit amet neque tempor, non dapibus lacus porta. Morbi varius bibendum erat mollis lacinia. Phasellus elit purus, lobortis nec pretium non, lacinia vel nunc. Donec ultricies urna nunc, et placerat enim euismod vitae. Nunc dignissim magna non posuere interdum. Vestibulum urna velit, euismod tristique rhoncus quis, fringilla id dolor. Etiam sit amet metus quam. Quisque non lorem vitae nisi mollis lacinia eu non urna. Sed sapien lorem, dictum et consequat eget, venenatis faucibus ipsum. Curabitur ut turpis ipsum. Phasellus vitae metus nisi.</p>
         <p>Donec finibus semper urna eu vehicula. Mauris in eleifend justo. Phasellus egestas dolor sed ornare dignissim. Ut euismod convallis est, nec interdum sapien faucibus in. Cras iaculis feugiat arcu, id consectetur risus varius sed. Mauris facilisis, risus sit amet dapibus facilisis, nisi orci aliquam dolor, eget tristique sapien leo vel mauris. Suspendisse quis libero sit amet ipsum eleifend pellentesque. Duis sed mi turpis. Vivamus vel sem eu lorem faucibus hendrerit. Suspendisse vel ante lectus. Suspendisse varius lectus et aliquam pharetra. Nunc elementum lorem sagittis felis lacinia feugiat. Morbi non risus volutpat, pharetra urna ut, commodo diam.</p>
         <p>Laoreet, turpis volutpat elementum commodo, sapien magna pellentesque mi, at iaculis enim nibh vehicula tellus. In hac habitasse platea dictumst. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc pretium, dolor non tristique pulvinar, tortor ex semper justo, tincidunt pharetra sem quam ut odio. Donec elit leo, commodo maximus lorem ut, feugiat faucibus nunc. Nulla lorem nunc, luctus ac arcu et, scelerisque dapibus velit. Sed consequat risus quis diam hendrerit, ut aliquet tellus venenatis. Suspendisse quis libero non dui sollicitudin consequat.</p>
